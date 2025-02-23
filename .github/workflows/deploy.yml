@@ -1,0 +1,39 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main  # Deploy when changes are pushed to the main branch
+
+jobs:
+  deploy:
+    name: Build & Deploy to AWS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t razorit-web .
+          docker tag razorit-web:latest 644732129545.dkr.ecr.us-east-2.amazonaws.com/razorit/web:latest
+          docker push 644732129545.dkr.ecr.us-east-2.amazonaws.com/razorit/web:latest
+
+      - name: Force ECS to Deploy New Version
+        run: |
+          aws ecs update-service \
+            --cluster razorit-cluster \
+            --service razorit-web-service \
+            --force-new-deployment
