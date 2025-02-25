@@ -4,7 +4,36 @@
     <title>RazorIT</title>
 </head>
 <body>
-    <h1>Hello RazorIT</h1>
-    <p>Auto deploy test.</p>
+    <h1>API Data</h1>
+    <ul id="data-list">Loading...</ul>
+
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch("http://api.razorit.com/test-db");
+                const data = await response.json();
+
+                const dataList = document.getElementById("data-list");
+                dataList.innerHTML = ""; // Clear placeholder text
+
+                if (data.data.length === 0) {
+                    dataList.innerHTML = "<li>No data found</li>";
+                    return;
+                }
+
+                data.data.forEach(item => {
+                    const li = document.createElement("li");
+                    li.textContent = item;
+                    dataList.appendChild(li);
+                });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById("data-list").innerHTML = "<li>Error loading data</li>";
+            }
+        }
+
+        fetchData();
+    </script>
+
 </body>
 </html>
