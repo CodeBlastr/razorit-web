@@ -10,7 +10,7 @@
     <script>
         async function fetchData() {
             try {
-                const response = await fetch("http://api.razorit.com/test-db");
+                const response = await fetch("https://api.razorit.com/test-db");
                 const data = await response.json();
 
                 const dataList = document.getElementById("data-list");
