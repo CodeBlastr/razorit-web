@@ -2,23 +2,20 @@
 <html>
 <head>
     <title>RazorIT</title>
-    <script src="config.js"></script> <!-- Load API Config -->
+    <script src="config.js"></script>
 </head>
 <body>
     <h1>API Data</h1>
     <ul id="data-list">Loading...</ul>
     <button onclick="fetchData()">Refresh Data</button>
+    <button onclick="logout()">Logout</button>
 
     <script>
         async function fetchData() {
             try {
-                const token = await getAuthToken(); // Get authentication token
-                if (!token) throw new Error("No token available");
-
-                const response = await fetch(`http://localhost:8000/test-db`, {
+                const response = await fetch(`${API_BASE_URL}/test-db`, {
                     method: "GET",
-                    headers: { "Authorization": `Bearer ${token}` },
-                    credentials: "include"
+                    credentials: "include" // Automatically sends auth cookie
                 });
 
                 if (!response.ok) {
@@ -45,7 +42,24 @@
             }
         }
 
-        fetchData();
+        async function login() {
+            await fetch(`${API_BASE_URL}/login`, {
+                method: "POST",
+                credentials: "include"
+            });
+            console.log("Logged in successfully.");
+            fetchData();
+        }
+
+        async function logout() {
+            await fetch(`${API_BASE_URL}/logout`, {
+                method: "GET",
+                credentials: "include"
+            });
+            console.log("Logged out successfully.");
+        }
+
+        login(); // Ensure authentication on page load
     </script>
 </body>
 </html>
