@@ -1,11 +1,12 @@
 version: "3.8"
 
 services:
-  web:
-    image: razorit-web
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
     container_name: razorit-web
     ports:
       - "8080:80"
-    volumes:
-      - ./app/public:/usr/share/nginx/html:ro
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    environment:
+      - NODE_ENV=production

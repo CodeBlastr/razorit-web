@@ -1,39 +1,47 @@
-name: Deploy to AWS
+name: Deploy Frontend to AWS
 
 on:
   push:
     branches:
-      - main  # Deploy when changes are pushed to the main branch
+      - main
 
 jobs:
   deploy:
-    name: Build & Deploy to AWS
+    name: Deploy React App
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up AWS CLI
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      - name: Log in to Amazon ECR
+      - name: Login to AWS ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and Push Docker Image
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY: razorit/web
+          IMAGE_TAG: latest
         run: |
-          docker build -t razorit-web .
-          docker tag razorit-web:latest 644732129545.dkr.ecr.us-east-2.amazonaws.com/razorit/web:latest
-          docker push 644732129545.dkr.ecr.us-east-2.amazonaws.com/razorit/web:latest
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.prod .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Force ECS to Deploy New Version
+      - name: Update ECS Service
+        env:
+          AWS_REGION: us-east-2
+          CLUSTER_NAME: razorit-cluster
+          SERVICE_NAME: razorit-web-service
         run: |
-          aws ecs update-service \
-            --cluster razorit-cluster \
-            --service razorit-web-service \
-            --force-new-deployment
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
