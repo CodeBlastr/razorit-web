@@ -1,4 +1,4 @@
-name: Deploy Frontend to AWS
+name: Deploy Frontend to AWS ECS
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy React App
+    name: Deploy React Frontend
     runs-on: ubuntu-latest
     environment: production
 
@@ -25,6 +25,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
+      - name: Validate Required Secrets
+        run: |
+          REQUIRED_SECRETS=("AWS_REGION" "ECR_REGISTRY" "ECR_REPOSITORY" "CLUSTER_NAME" "SERVICE_NAME" "TASK_FAMILY")
+          for SECRET in "${REQUIRED_SECRETS[@]}"; do
+            if [[ -z "${!SECRET}" ]]; then
+              echo "ERROR: Secret $SECRET is not set. Deployment failed!"
+              exit 1
+            fi
+          done
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+          SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+          TASK_FAMILY: ${{ secrets.TASK_FAMILY }}
+
       - name: Login to AWS ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -38,10 +55,32 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.prod .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Update ECS Service
+      - name: Register New Task Definition with Logging
         env:
-          AWS_REGION: us-east-2
-          CLUSTER_NAME: razorit-cluster
-          SERVICE_NAME: razorit-web-service
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+          SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+          TASK_FAMILY: ${{ secrets.TASK_FAMILY }}
+          LOG_GROUP_NAME: "/ecs/razorit-web-task"
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY: razorit/web
+          IMAGE_TAG: latest
         run: |
-          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+          TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_FAMILY --query "taskDefinition" --output json)
+
+          echo "$TASK_DEF" | jq '
+            .containerDefinitions[0].logConfiguration = {
+              "logDriver": "awslogs",
+              "options": {
+                "awslogs-group": "'$LOG_GROUP_NAME'",
+                "awslogs-region": "'$AWS_REGION'",
+                "awslogs-stream-prefix": "ecs",
+                "awslogs-create-group": "true",
+                "mode": "non-blocking",
+                "max-buffer-size": "25m"
+              }
+            } | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .taskDefinitionArn)' > new-task-def.json
+
+          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json --query "taskDefinition.taskDefinitionArn" --output text)
+
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $NEW_TASK_DEF_ARN --force-new-deployment
