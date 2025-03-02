@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -6,9 +6,40 @@ const ContactForm = () => {
     email: "",
     message: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState("");
+  const [token, setToken] = useState<string | null>(null);
+
+  const siteName = import.meta.env.VITE_SITE_NAME || "Website";
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const res = await fetch(`${apiBaseUrl}/auth/token`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ grant_type: "client_credentials" }),
+        });
+        const data = await res.json();
+        if (res.ok && data.access_token) {
+          localStorage.setItem("jwt", data.access_token);
+          setToken(data.access_token);
+        } else {
+          setResponse("Failed to get authentication token.");
+        }
+      } catch (error) {
+        setResponse("Network error while fetching token.");
+      }
+    };
+
+    const storedToken = localStorage.getItem("jwt");
+    if (storedToken) {
+      setToken(storedToken);
+    } else {
+      fetchToken();
+    }
+  }, [apiBaseUrl]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,15 +50,18 @@ const ContactForm = () => {
     setLoading(true);
     setResponse("");
 
-    const siteName = import.meta.env.VITE_SITE_NAME || "Website";
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+    if (!token) {
+      setResponse("Authentication token missing. Please refresh and try again.");
+      setLoading(false);
+      return;
+    }
 
     try {
-      const res = await fetch(`${apiBaseUrl}/send-test-email/`, {
+      const res = await fetch(`${apiBaseUrl}/send-contact/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("jwt") || ""}`,
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           email: formData.email,
@@ -83,7 +117,7 @@ const ContactForm = () => {
         ></textarea>
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !token}
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
         >
           {loading ? "Sending..." : "Send Email"}
