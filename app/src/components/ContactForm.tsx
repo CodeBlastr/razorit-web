@@ -12,15 +12,22 @@ const ContactForm = () => {
 
   const siteName = import.meta.env.VITE_SITE_NAME || "Website";
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+  const clientId = import.meta.env.VITE_CLIENT_ID;
+  const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
 
   useEffect(() => {
     const fetchToken = async () => {
       try {
+        const formData = new URLSearchParams();
+        formData.append("client_id", clientId);
+        formData.append("client_secret", clientSecret);
+
         const res = await fetch(`${apiBaseUrl}/auth/token`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ grant_type: "client_credentials" }),
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formData.toString(),
         });
+
         const data = await res.json();
         if (res.ok && data.access_token) {
           localStorage.setItem("jwt", data.access_token);
@@ -39,7 +46,7 @@ const ContactForm = () => {
     } else {
       fetchToken();
     }
-  }, [apiBaseUrl]);
+  }, [apiBaseUrl, clientId, clientSecret]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
