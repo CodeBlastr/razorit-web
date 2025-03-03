@@ -27,7 +27,7 @@ jobs:
 
       - name: Validate Required Secrets
         run: |
-          REQUIRED_SECRETS=("AWS_REGION" "ECR_REGISTRY" "ECR_REPOSITORY" "CLUSTER_NAME" "SERVICE_NAME" "TASK_FAMILY")
+          REQUIRED_SECRETS=("AWS_REGION" "ECR_REGISTRY" "ECR_REPOSITORY" "CLUSTER_NAME" "SERVICE_NAME" "TASK_FAMILY_FRONTEND")
           for SECRET in "${REQUIRED_SECRETS[@]}"; do
             if [[ -z "${!SECRET}" ]]; then
               echo "ERROR: Secret $SECRET is not set. Deployment failed!"
@@ -40,7 +40,7 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
           SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
-          TASK_FAMILY: ${{ secrets.TASK_FAMILY }}
+          TASK_FAMILY_FRONTEND: ${{ secrets.TASK_FAMILY_FRONTEND }}
 
       - name: Login to AWS ECR
         id: login-ecr
@@ -55,33 +55,33 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.prod .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Get Current Task Definition (Frontend)
+      - name: Get Frontend Task Definition
         env:
-          TASK_FAMILY: ${{ secrets.TASK_FAMILY }}
+          TASK_FAMILY_FRONTEND: ${{ secrets.TASK_FAMILY_FRONTEND }}
         run: |
-          aws ecs describe-task-definition --task-definition $TASK_FAMILY --query "taskDefinition" --output json > current-task-def.json
+          aws ecs describe-task-definition --task-definition $TASK_FAMILY_FRONTEND --query "taskDefinition" --output json > current-task-def.json
 
-      - name: Extract and Verify Container Name
+      - name: Extract and Verify Frontend Container Name
         run: |
           CONTAINERS=$(jq -r '.containerDefinitions[].name' current-task-def.json)
-          echo "Found Containers in Task Definition: $CONTAINERS"
+          echo "Found Containers in Frontend Task Definition: $CONTAINERS"
 
-          FRONTEND_CONTAINER=$(echo "$CONTAINERS" | grep "razorit-web" || echo "")
-          
+          FRONTEND_CONTAINER=$(echo "$CONTAINERS" | head -n1)  # Pick first available container
+
           if [[ -z "$FRONTEND_CONTAINER" ]]; then
-            echo "ERROR: No frontend container (razorit-web) found in task definition!"
+            echo "ERROR: No containers found in frontend task definition!"
             exit 1
           fi
 
           echo "Using frontend container: $FRONTEND_CONTAINER"
           echo "FRONTEND_CONTAINER=$FRONTEND_CONTAINER" >> $GITHUB_ENV
 
-      - name: Register New Task Definition (Frontend Only)
+      - name: Register New Task Definition for Frontend
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
           SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
-          TASK_FAMILY: ${{ secrets.TASK_FAMILY }}
+          TASK_FAMILY_FRONTEND: ${{ secrets.TASK_FAMILY_FRONTEND }}
           LOG_GROUP_NAME: "/ecs/razorit-web-task"
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITORY: razorit/web
