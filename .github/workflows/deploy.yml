@@ -27,7 +27,7 @@ jobs:
 
       - name: Validate Required Secrets
         run: |
-          REQUIRED_SECRETS=("AWS_REGION" "ECR_REGISTRY" "ECR_REPOSITORY" "CLUSTER_NAME" "SERVICE_NAME" "TASK_FAMILY_FRONTEND" "VITE_API_BASE_URL" "VITE_SITE_NAME")
+          REQUIRED_SECRETS=("AWS_REGION" "ECR_REGISTRY" "ECR_REPOSITORY" "CLUSTER_NAME" "SERVICE_NAME" "TASK_FAMILY_FRONTEND" "VITE_API_BASE_URL" "VITE_SITE_NAME" "VITE_CLIENT_ID" "VITE_CLIENT_SECRET")
           for SECRET in "${REQUIRED_SECRETS[@]}"; do
             if [[ -z "${!SECRET}" ]]; then
               echo "ERROR: Secret $SECRET is not set. Deployment failed!"
@@ -43,6 +43,8 @@ jobs:
           TASK_FAMILY_FRONTEND: ${{ secrets.TASK_FAMILY_FRONTEND }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
           VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
+          VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+          VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
 
       - name: Login to AWS ECR
         id: login-ecr
@@ -55,15 +57,23 @@ jobs:
           IMAGE_TAG: latest
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
           VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
+          VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+          VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
         run: |
           echo "Building frontend with environment variables..."
           echo "VITE_API_BASE_URL=${VITE_API_BASE_URL}"
           echo "VITE_SITE_NAME=${VITE_SITE_NAME}"
+          echo "VITE_CLIENT_ID=${VITE_CLIENT_ID}"
+          echo "VITE_CLIENT_SECRET=${VITE_CLIENT_SECRET}"
           
-          docker build --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL --build-arg VITE_SITE_NAME=$VITE_SITE_NAME \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.prod .
+          docker build --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL \
+                       --build-arg VITE_SITE_NAME=$VITE_SITE_NAME \
+                       --build-arg VITE_CLIENT_ID=$VITE_CLIENT_ID \
+                       --build-arg VITE_CLIENT_SECRET=$VITE_CLIENT_SECRET \
+                       -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f web/Docker.prod .
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
 
       - name: Get Frontend Task Definition
         env:
@@ -98,17 +108,23 @@ jobs:
           IMAGE_TAG: latest
           VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+          VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
         run: |
           jq --arg IMAGE "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
              --arg FRONTEND_CONTAINER "$FRONTEND_CONTAINER" \
              --arg VITE_API_BASE_URL "$VITE_API_BASE_URL" \
              --arg VITE_SITE_NAME "$VITE_SITE_NAME" \
+             --arg VITE_CLIENT_ID "$VITE_CLIENT_ID" \
+             --arg VITE_CLIENT_SECRET "$VITE_CLIENT_SECRET" \
              '.containerDefinitions |= map(
                if .name == $FRONTEND_CONTAINER then
                  .image = $IMAGE |
                  .environment = [
                    {"name": "VITE_API_BASE_URL", "value": $VITE_API_BASE_URL},
-                   {"name": "VITE_SITE_NAME", "value": $VITE_SITE_NAME}
+                   {"name": "VITE_SITE_NAME", "value": $VITE_SITE_NAME},
+                   {"name": "VITE_CLIENT_ID", "value": $VITE_CLIENT_ID},
+                   {"name": "VITE_CLIENT_SECRET", "value": $VITE_CLIENT_SECRET}
                  ] |
                  .logConfiguration = {
                    "logDriver": "awslogs",
