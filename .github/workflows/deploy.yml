@@ -55,25 +55,28 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.prod .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Get Current Task Definition
+      - name: Get Current Task Definition (Frontend)
         env:
           TASK_FAMILY: ${{ secrets.TASK_FAMILY }}
         run: |
           aws ecs describe-task-definition --task-definition $TASK_FAMILY --query "taskDefinition" --output json > current-task-def.json
 
-      - name: Extract Container Names and Verify
+      - name: Extract and Verify Container Name
         run: |
           CONTAINERS=$(jq -r '.containerDefinitions[].name' current-task-def.json)
-          echo "Found Containers: $CONTAINERS"
-          if [[ -z "$CONTAINERS" ]]; then
-            echo "ERROR: No containers found in task definition!"
+          echo "Found Containers in Task Definition: $CONTAINERS"
+
+          FRONTEND_CONTAINER=$(echo "$CONTAINERS" | grep "razorit-web" || echo "")
+          
+          if [[ -z "$FRONTEND_CONTAINER" ]]; then
+            echo "ERROR: No frontend container (razorit-web) found in task definition!"
             exit 1
           fi
-          FIRST_CONTAINER=$(echo "$CONTAINERS" | head -n1)
-          echo "Using first container: $FIRST_CONTAINER"
-          echo "CONTAINER_NAME=$FIRST_CONTAINER" >> $GITHUB_ENV
 
-      - name: Register New Task Definition
+          echo "Using frontend container: $FRONTEND_CONTAINER"
+          echo "FRONTEND_CONTAINER=$FRONTEND_CONTAINER" >> $GITHUB_ENV
+
+      - name: Register New Task Definition (Frontend Only)
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
@@ -84,9 +87,9 @@ jobs:
           ECR_REPOSITORY: razorit/web
           IMAGE_TAG: latest
         run: |
-          jq --arg IMAGE "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" --arg CONTAINER_NAME "$CONTAINER_NAME" '
+          jq --arg IMAGE "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" --arg FRONTEND_CONTAINER "$FRONTEND_CONTAINER" '
             .containerDefinitions |= map(
-              if .name == $CONTAINER_NAME then
+              if .name == $FRONTEND_CONTAINER then
                 .image = $IMAGE |
                 .logConfiguration = {
                   "logDriver": "awslogs",
@@ -102,8 +105,8 @@ jobs:
               else . end
             ) | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' current-task-def.json > new-task-def.json
 
-          cat new-task-def.json  # Debugging step to ensure it's correct
-          
+          cat new-task-def.json  # Debugging step
+
           NEW_TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json --query "taskDefinition.taskDefinitionArn" --output text)
 
           aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $NEW_TASK_DEF_ARN --force-new-deployment
