@@ -72,8 +72,9 @@ const ContactForm = () => {
         },
         body: JSON.stringify({
           email: formData.email,
+          name: formData.name,
           subject: `${siteName} Information Request`,
-          message: `Name: ${formData.name}\n\nMessage: ${formData.message}`,
+          message: formData.message,
         }),
       });
 
