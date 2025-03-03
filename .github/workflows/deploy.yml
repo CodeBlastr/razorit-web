@@ -61,11 +61,17 @@ jobs:
         run: |
           aws ecs describe-task-definition --task-definition $TASK_FAMILY --query "taskDefinition" --output json > current-task-def.json
 
-      - name: Extract Container Name Dynamically
+      - name: Extract Container Names and Verify
         run: |
-          CONTAINER_NAME=$(jq -r '.containerDefinitions[0].name' current-task-def.json)
-          echo "Extracted container name: $CONTAINER_NAME"
-          echo "CONTAINER_NAME=$CONTAINER_NAME" >> $GITHUB_ENV
+          CONTAINERS=$(jq -r '.containerDefinitions[].name' current-task-def.json)
+          echo "Found Containers: $CONTAINERS"
+          if [[ -z "$CONTAINERS" ]]; then
+            echo "ERROR: No containers found in task definition!"
+            exit 1
+          fi
+          FIRST_CONTAINER=$(echo "$CONTAINERS" | head -n1)
+          echo "Using first container: $FIRST_CONTAINER"
+          echo "CONTAINER_NAME=$FIRST_CONTAINER" >> $GITHUB_ENV
 
       - name: Register New Task Definition
         env:
@@ -96,6 +102,8 @@ jobs:
               else . end
             ) | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' current-task-def.json > new-task-def.json
 
+          cat new-task-def.json  # Debugging step to ensure it's correct
+          
           NEW_TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json --query "taskDefinition.taskDefinitionArn" --output text)
 
           aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $NEW_TASK_DEF_ARN --force-new-deployment
