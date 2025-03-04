@@ -15,31 +15,34 @@ const ContactForm = () => {
   const clientId = import.meta.env.VITE_CLIENT_ID;
   const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const formData = new URLSearchParams();
-        formData.append("client_id", clientId);
-        formData.append("client_secret", clientSecret);
+  const fetchToken = async () => {
+    try {
+      const formData = new URLSearchParams();
+      formData.append("client_id", clientId);
+      formData.append("client_secret", clientSecret);
 
-        const res = await fetch(`${apiBaseUrl}/auth/token`, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: formData.toString(),
-        });
+      const res = await fetch(`${apiBaseUrl}/auth/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
+      });
 
-        const data = await res.json();
-        if (res.ok && data.access_token) {
-          localStorage.setItem("jwt", data.access_token);
-          setToken(data.access_token);
-        } else {
-          setResponse("Failed to get authentication token.");
-        }
-      } catch (error) {
-        setResponse("Network error while fetching token.");
+      const data = await res.json();
+      if (res.ok && data.access_token) {
+        localStorage.setItem("jwt", data.access_token);
+        setToken(data.access_token);
+        return data.access_token;
+      } else {
+        setResponse("Failed to get authentication token.");
+        return null;
       }
-    };
+    } catch (error) {
+      setResponse("Network error while fetching token.");
+      return null;
+    }
+  };
 
+  useEffect(() => {
     const storedToken = localStorage.getItem("jwt");
     if (storedToken) {
       setToken(storedToken);
@@ -63,33 +66,46 @@ const ContactForm = () => {
       return;
     }
 
-    try {
-      const res = await fetch(`${apiBaseUrl}/send-contact/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          name: formData.name,
-          subject: `${siteName} Information Request`,
-          message: formData.message,
-        }),
-      });
+    const sendRequest = async (retry = false) => {
+      try {
+        const res = await fetch(`${apiBaseUrl}/send-contact/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            name: formData.name,
+            subject: `${siteName} Information Request`,
+            message: formData.message,
+          }),
+        });
 
-      const data = await res.json();
-      if (res.ok) {
-        setResponse("Email sent successfully!");
-        setFormData({ name: "", email: "", message: "" });
-      } else {
-        setResponse(`Error: ${data.detail || "Something went wrong"}`);
+        const data = await res.json();
+
+        if (res.ok) {
+          setResponse("Email sent successfully!");
+          setFormData({ name: "", email: "", message: "" });
+        } else if (!retry && data.detail === "Invalid credentials") {
+          // Token expired, refresh it and retry once
+          const newToken = await fetchToken();
+          if (newToken) {
+            await sendRequest(true);
+          } else {
+            setResponse(`Error: ${data.detail || "Something went wrong"}`);
+          }
+        } else {
+          setResponse(`Error: ${data.detail || "Something went wrong"}`);
+        }
+      } catch (error) {
+        setResponse("Network error. Try again later.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      setResponse("Network error. Try again later.");
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    await sendRequest();
   };
 
   return (
