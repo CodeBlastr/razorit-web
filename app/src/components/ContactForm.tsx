@@ -60,19 +60,21 @@ const ContactForm = () => {
     setLoading(true);
     setResponse("");
 
-    if (!token) {
-      setResponse("Authentication token missing. Please refresh and try again.");
-      setLoading(false);
-      return;
-    }
+    const sendRequest = async (useNewToken = false) => {
+      const authToken = useNewToken ? await fetchToken() : token;
 
-    const sendRequest = async (retry = false) => {
+      if (!authToken) {
+        setResponse("Authentication token missing. Please refresh and try again.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await fetch(`${apiBaseUrl}/send-contact/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            "Authorization": `Bearer ${authToken}`,
           },
           body: JSON.stringify({
             email: formData.email,
@@ -87,14 +89,9 @@ const ContactForm = () => {
         if (res.ok) {
           setResponse("Email sent successfully!");
           setFormData({ name: "", email: "", message: "" });
-        } else if (!retry && data.detail === "Invalid credentials") {
-          // Token expired, refresh it and retry once
-          const newToken = await fetchToken();
-          if (newToken) {
-            await sendRequest(true);
-          } else {
-            setResponse(`Error: ${data.detail || "Something went wrong"}`);
-          }
+        } else if (data.detail === "Invalid credentials" && !useNewToken) {
+          // ✅ Retry the request once with a new token
+          await sendRequest(true);
         } else {
           setResponse(`Error: ${data.detail || "Something went wrong"}`);
         }
@@ -141,7 +138,7 @@ const ContactForm = () => {
         ></textarea>
         <button
           type="submit"
-          disabled={loading || !token}
+          disabled={loading}
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
         >
           {loading ? "Sending..." : "Send Email"}
