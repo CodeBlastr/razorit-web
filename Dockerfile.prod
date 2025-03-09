@@ -6,14 +6,14 @@ WORKDIR /app
 # Install Yarn globally
 RUN corepack enable && corepack prepare yarn@stable --activate
 
+# Set Yarn to use node_modules instead of PnP
+ENV YARN_NODE_LINKER=node-modules
+
 # Copy package.json and yarn.lock
 COPY package.json yarn.lock ./
 
 # Install dependencies using Yarn
 RUN yarn install --immutable
-
-# Ensure node_modules is available before building
-RUN ls -la /app/node_modules && yarn cache clean
 
 # Copy the entire app source
 COPY . .
