@@ -19,7 +19,7 @@ RUN yarn install --immutable
 COPY . .
 
 # Build the frontend
-RUN yarn build && yarn export
+RUN yarn build
 
 # Use Nginx to serve the built app
 FROM nginx:alpine
