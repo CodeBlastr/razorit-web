@@ -1,6 +1,0 @@
-{
-  "/(homes)/(home-6)/(main-demo)/fancy-one-page/page": "app/(homes)/(home-6)/(main-demo)/fancy-one-page/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js",
-  "/_not-found/page": "app/_not-found/page.js"
-}

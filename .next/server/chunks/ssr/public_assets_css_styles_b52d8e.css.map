@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack://[project]/public/assets/css/styles.css"],"sourcesContent":["@import \"./bootstrap.min.css\";\n@import \"./style.css\";\n\n@import \"./vertical-rhythm.min.css\";\n@import \"./magnific-popup.css\";\n@import \"./owl.carousel.css\";\n@import \"./splitting.css\";\n@import \"./YTPlayer.css\";\n@import \"./demo-main/demo-main.css\";\n@import \"./demo-bold/demo-bold.css\";\n@import \"./demo-brutalist/demo-brutalist.css\";\n\n@import \"./demo-corporate/demo-corporate.css\";\n@import \"./demo-elegant/demo-elegant.css\";\n@import \"./demo-fancy/demo-fancy.css\";\n@import \"./demo-gradient/demo-gradient.css\";\n@import \"./demo-modern/demo-modern.css\";\n@import \"./demo-slick/demo-slick.css\";\n@import \"./demo-strong/demo-strong.css\";\n\n@import \"./custom.css\";\n@import \"./style-responsive.css\";\n"],"names":[],"mappings":""}},
-    {"offset": {"line": 2, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
-}
