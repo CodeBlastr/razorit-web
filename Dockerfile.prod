@@ -3,12 +3,17 @@ FROM node:18 AS builder
 
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY app/package.json app/package-lock.json ./
-RUN npm install
+# Install Yarn globally
+RUN corepack enable && corepack prepare yarn@stable --activate
+
+# Copy package.json and yarn.lock
+COPY package.json yarn.lock ./
+
+# Install dependencies using Yarn
+RUN yarn install --frozen-lockfile
 
 # Copy the entire app source
-COPY app .
+COPY . .
 
 # Pass environment variables to Vite at build time
 ARG VITE_API_BASE_URL
@@ -22,7 +27,7 @@ ENV VITE_CLIENT_ID=$VITE_CLIENT_ID
 ENV VITE_CLIENT_SECRET=$VITE_CLIENT_SECRET
 
 # Build the frontend
-RUN npm run build
+RUN yarn build
 
 # Use Nginx to serve the built app
 FROM nginx:alpine

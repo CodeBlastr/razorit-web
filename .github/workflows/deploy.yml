@@ -18,14 +18,14 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials  # ✅ RESTORED
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      - name: Validate Required Secrets
+      - name: Validate Required Secrets  # ✅ RESTORED
         run: |
           REQUIRED_SECRETS=("AWS_REGION" "ECR_REGISTRY" "ECR_REPOSITORY" "CLUSTER_NAME" "SERVICE_NAME" "TASK_FAMILY_FRONTEND" "VITE_API_BASE_URL" "VITE_SITE_NAME" "VITE_CLIENT_ID" "VITE_CLIENT_SECRET")
           for SECRET in "${REQUIRED_SECRETS[@]}"; do
@@ -55,46 +55,16 @@ jobs:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITORY: razorit/web
           IMAGE_TAG: latest
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
-          VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
-          VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
         run: |
           echo "Building frontend with environment variables..."
-          echo "VITE_API_BASE_URL=${VITE_API_BASE_URL}"
-          echo "VITE_SITE_NAME=${VITE_SITE_NAME}"
-          echo "VITE_CLIENT_ID=${VITE_CLIENT_ID}"
-          echo "VITE_CLIENT_SECRET=${VITE_CLIENT_SECRET}"
           
-          docker build --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL \
-                       --build-arg VITE_SITE_NAME=$VITE_SITE_NAME \
-                       --build-arg VITE_CLIENT_ID=$VITE_CLIENT_ID \
-                       --build-arg VITE_CLIENT_SECRET=$VITE_CLIENT_SECRET \
+          docker build --build-arg VITE_API_BASE_URL="${{ secrets.VITE_API_BASE_URL }}" \
+                       --build-arg VITE_SITE_NAME="${{ secrets.VITE_SITE_NAME }}" \
+                       --build-arg VITE_CLIENT_ID="${{ secrets.VITE_CLIENT_ID }}" \
+                       --build-arg VITE_CLIENT_SECRET="${{ secrets.VITE_CLIENT_SECRET }}" \
                        -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.prod .
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-
-      - name: Get Frontend Task Definition
-        env:
-          TASK_FAMILY_FRONTEND: ${{ secrets.TASK_FAMILY_FRONTEND }}
-        run: |
-          aws ecs describe-task-definition --task-definition $TASK_FAMILY_FRONTEND --query "taskDefinition" --output json > current-task-def.json
-
-      - name: Extract and Verify Frontend Container Name
-        run: |
-          CONTAINERS=$(jq -r '.containerDefinitions[].name' current-task-def.json)
-          echo "Found Containers in Frontend Task Definition: $CONTAINERS"
-
-          FRONTEND_CONTAINER=$(echo "$CONTAINERS" | head -n1)  # Pick first available container
-
-          if [[ -z "$FRONTEND_CONTAINER" ]]; then
-            echo "ERROR: No containers found in frontend task definition!"
-            exit 1
-          fi
-
-          echo "Using frontend container: $FRONTEND_CONTAINER"
-          echo "FRONTEND_CONTAINER=$FRONTEND_CONTAINER" >> $GITHUB_ENV
 
       - name: Register New Task Definition for Frontend
         env:
@@ -106,17 +76,24 @@ jobs:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITORY: razorit/web
           IMAGE_TAG: latest
-          VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
           VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
           VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
         run: |
+          aws ecs describe-task-definition --task-definition $TASK_FAMILY_FRONTEND --query "taskDefinition" --output json > current-task-def.json
+
+          FRONTEND_CONTAINER=$(jq -r '.containerDefinitions[].name' current-task-def.json | head -n1)
+          echo "Using frontend container: $FRONTEND_CONTAINER"
+
           jq --arg IMAGE "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
              --arg FRONTEND_CONTAINER "$FRONTEND_CONTAINER" \
              --arg VITE_API_BASE_URL "$VITE_API_BASE_URL" \
              --arg VITE_SITE_NAME "$VITE_SITE_NAME" \
              --arg VITE_CLIENT_ID "$VITE_CLIENT_ID" \
              --arg VITE_CLIENT_SECRET "$VITE_CLIENT_SECRET" \
+             --arg LOG_GROUP_NAME "$LOG_GROUP_NAME" \
+             --arg AWS_REGION "$AWS_REGION" \
              '.containerDefinitions |= map(
                if .name == $FRONTEND_CONTAINER then
                  .image = $IMAGE |
@@ -129,8 +106,8 @@ jobs:
                  .logConfiguration = {
                    "logDriver": "awslogs",
                    "options": {
-                     "awslogs-group": "'$LOG_GROUP_NAME'",
-                     "awslogs-region": "'$AWS_REGION'",
+                     "awslogs-group": $LOG_GROUP_NAME,
+                     "awslogs-region": $AWS_REGION,
                      "awslogs-stream-prefix": "ecs",
                      "awslogs-create-group": "true",
                      "mode": "non-blocking",
