@@ -119,7 +119,8 @@ jobs:
                  }
                else . end
              ) | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' current-task-def.json > new-task-def.json
-          cat new-task-def.json
+
+          cat new-task-def.json  # Debugging step
 
       - name: Enable Execute Command on ECS Service
         env:
