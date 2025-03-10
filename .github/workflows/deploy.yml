@@ -139,6 +139,7 @@ jobs:
           AWS_REGION: us-east-2
           CLUSTER_NAME: razorit-cluster
           SERVICE_NAME: razorit-web-service
+          
         run: |
           NEW_TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json --query "taskDefinition.taskDefinitionArn" --output text)
-          aws ecs describe-services --cluster $CLUSTER_NAME --services $SERVICE_NAME --query "services[0].enableExecuteCommand"
+          aws ecs describe-services --cluster $CLUSTER_NAME --services $SERVICE_NAME --query "services[0].enableExecuteCommand" --task-definition $NEW_TASK_DEF_ARN --force-new-deployment
