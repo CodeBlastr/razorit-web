@@ -66,12 +66,11 @@ jobs:
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Register New Task Definition for Frontend (Port 3000 → 80)
+            - name: Register New Task Definition for Frontend
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
           SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
-          TASK_FAMILY_FRONTEND: ${{ secrets.TASK_FAMILY_FRONTEND }}
           LOG_GROUP_NAME: "/ecs/razorit-web-task"
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITORY: razorit/web
@@ -81,7 +80,7 @@ jobs:
           VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
           VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
         run: |
-          aws ecs describe-task-definition --task-definition $TASK_FAMILY_FRONTEND --query "taskDefinition" --output json > current-task-def.json
+          aws ecs describe-task-definition --task-definition $SERVICE_NAME --query "taskDefinition" --output json > current-task-def.json
 
           FRONTEND_CONTAINER=$(jq -r '.containerDefinitions[].name' current-task-def.json | head -n1)
           echo "Using frontend container: $FRONTEND_CONTAINER"
@@ -103,6 +102,9 @@ jobs:
                    {"name": "VITE_CLIENT_ID", "value": $VITE_CLIENT_ID},
                    {"name": "VITE_CLIENT_SECRET", "value": $VITE_CLIENT_SECRET}
                  ] |
+                 .portMappings = [
+                   {"containerPort": 3000, "hostPort": 80, "protocol": "tcp"}
+                 ] |
                  .logConfiguration = {
                    "logDriver": "awslogs",
                    "options": {
@@ -113,18 +115,12 @@ jobs:
                      "mode": "non-blocking",
                      "max-buffer-size": "25m"
                    }
-                 } |
-                 .portMappings = [
-                   {
-                     "containerPort": 3000,
-                     "hostPort": 3000,
-                     "protocol": "tcp"
-                   }
-                 ]
+                 }
                else . end
              ) | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' current-task-def.json > new-task-def.json
 
           cat new-task-def.json  # Debugging step
+
 
       - name: Enable Execute Command on ECS Service
         env:
