@@ -71,6 +71,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
           SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+          TASK_DEFINITION_NAME: "razorit-web-task"
           LOG_GROUP_NAME: "/ecs/razorit-web-task"
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITORY: razorit/web
@@ -80,7 +81,7 @@ jobs:
           VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
           VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
         run: |
-          aws ecs describe-task-definition --task-definition $SERVICE_NAME --query "taskDefinition" --output json > current-task-def.json
+          aws ecs describe-task-definition --task-definition $TASK_DEFINITION_NAME --query "taskDefinition" --output json > current-task-def.json
 
           FRONTEND_CONTAINER=$(jq -r '.containerDefinitions[].name' current-task-def.json | head -n1)
           echo "Using frontend container: $FRONTEND_CONTAINER"
@@ -118,9 +119,7 @@ jobs:
                  }
                else . end
              ) | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' current-task-def.json > new-task-def.json
-
-          cat new-task-def.json  # Debugging step
-
+          cat new-task-def.json
 
       - name: Enable Execute Command on ECS Service
         env:
