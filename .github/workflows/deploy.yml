@@ -18,14 +18,14 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      - name: Configure AWS Credentials  # ✅ RESTORED
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      - name: Validate Required Secrets  # ✅ RESTORED
+      - name: Validate Required Secrets
         run: |
           REQUIRED_SECRETS=("AWS_REGION" "ECR_REGISTRY" "ECR_REPOSITORY" "CLUSTER_NAME" "SERVICE_NAME" "TASK_FAMILY_FRONTEND" "VITE_API_BASE_URL" "VITE_SITE_NAME" "VITE_CLIENT_ID" "VITE_CLIENT_SECRET")
           for SECRET in "${REQUIRED_SECRETS[@]}"; do
@@ -66,7 +66,7 @@ jobs:
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Register New Task Definition for Frontend
+      - name: Register New Task Definition for Frontend (Port 3000 → 80)
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
@@ -113,7 +113,14 @@ jobs:
                      "mode": "non-blocking",
                      "max-buffer-size": "25m"
                    }
-                 }
+                 } |
+                 .portMappings = [
+                   {
+                     "containerPort": 3000,
+                     "hostPort": 80,
+                     "protocol": "tcp"
+                   }
+                 ]
                else . end
              ) | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' current-task-def.json > new-task-def.json
 
