@@ -1,3 +1,8 @@
+# Local Dev Environment Setup
+
+`docker compose -f compose.dev.yml up -d --build`
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

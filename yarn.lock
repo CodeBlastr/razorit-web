@@ -301,9 +301,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001579":
-  version: 1.0.30001699
-  resolution: "caniuse-lite@npm:1.0.30001699"
-  checksum: 10c0/e87b3a0602c3124131f6a21f1eb262378e17a2ee3089e3c472ac8b9caa85cf7d6a219655379302c29c6f10a74051f2a712639d7f98ee0444c73fefcbaf25d519
+  version: 1.0.30001703
+  resolution: "caniuse-lite@npm:1.0.30001703"
+  checksum: 10c0/ed88e318da28e9e59c4ac3a2e3c42859558b7b713aebf03696a1f916e4ed4b70734dda82be04635e2b62ec355b8639bbed829b7b12ff528d7f9cc31a3a5bea91
   languageName: node
   linkType: hard
 
@@ -461,11 +461,11 @@ __metadata:
   linkType: hard
 
 "nanoid@npm:^3.3.6":
-  version: 3.3.8
-  resolution: "nanoid@npm:3.3.8"
+  version: 3.3.9
+  resolution: "nanoid@npm:3.3.9"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: 10c0/4b1bb29f6cfebf3be3bc4ad1f1296fb0a10a3043a79f34fbffe75d1621b4318319211cd420549459018ea3592f0d2f159247a6f874911d6d26eaaadda2478120
+  checksum: 10c0/4515abe53db7b150cf77074558efc20d8e916d6910d557b5ce72e8bbf6f8e7554d3d7a0d180bfa65e5d8e99aa51b207aa8a3bf5f3b56233897b146d592e30b24
   languageName: node
   linkType: hard
 
@@ -603,13 +603,13 @@ __metadata:
   linkType: hard
 
 "react-photoswipe-gallery@npm:^3.0.1":
-  version: 3.0.2
-  resolution: "react-photoswipe-gallery@npm:3.0.2"
+  version: 3.1.0
+  resolution: "react-photoswipe-gallery@npm:3.1.0"
   peerDependencies:
     photoswipe: ">= 5.2.2"
     prop-types: ">= 15.7.0"
     react: ">= 16.8.0"
-  checksum: 10c0/8ce8dc5b74decc1e422e614cbe79dbaf17d740ab5af08b0561c037e762439ae293ae5354b911738bac9f9b669cdb7e261d49250486bc749e99a74f555006fc99
+  checksum: 10c0/38fdbc37eb896869b2751d8a54cc5136d970685be618c24e86e0fa17ad6c5683a5e4489dc27f15d2574a8a1394fab8bcec87536927edd618d2b5ea0b471c7598
   languageName: node
   linkType: hard
 
@@ -786,9 +786,9 @@ __metadata:
   linkType: hard
 
 "swiper@npm:^11.2.2":
-  version: 11.2.2
-  resolution: "swiper@npm:11.2.2"
-  checksum: 10c0/1edb67949c5957877f3c30370e0eb188bbf044f80e482376db97b1923f7f7c07e41f84bb0dacae766c77f01ee6be1b4cab839ec1dd3811adebd7ce36d00571bf
+  version: 11.2.5
+  resolution: "swiper@npm:11.2.5"
+  checksum: 10c0/dd1e598a810ee4e38316dc6bb80d27be374faf78385f44669f24c46427929d8532e96fc52fb45b8c9edb956074408ce14208355ff8410d68a71e5f8f39287da1
   languageName: node
   linkType: hard
 
