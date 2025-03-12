@@ -21,8 +21,22 @@ COPY . .
 # Build the frontend
 RUN yarn build
 
-# Expose the correct port (Next.js runs on 3000)
+# Use a lightweight Node.js image for serving
+FROM node:18 AS runner
+
+WORKDIR /app
+
+# Set environment to production
+ENV NODE_ENV=production
+
+# Copy only the necessary files from the builder stage
+COPY --from=builder /app/package.json /app/yarn.lock ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
+# Expose Next.js default port
 EXPOSE 3000
 
-# Start the Next.js server
-CMD ["yarn", "start"]
+# Start Next.js server
+CMD ["yarn", "next", "start"]
