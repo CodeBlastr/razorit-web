@@ -3,13 +3,12 @@ name: Deploy Frontend to AWS ECS
 on:
   push:
     branches:
-      - main
+      - main  # Triggers deployment when pushing to main
 
 jobs:
   deploy:
-    name: Deploy React Frontend
+    name: Deploy Frontend
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
       - name: Checkout Repository
@@ -23,28 +22,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
-
-      - name: Validate Required Secrets
-        run: |
-          REQUIRED_SECRETS=("AWS_REGION" "ECR_REGISTRY" "ECR_REPOSITORY" "CLUSTER_NAME" "SERVICE_NAME" "TASK_FAMILY_FRONTEND" "VITE_API_BASE_URL" "VITE_SITE_NAME" "VITE_CLIENT_ID" "VITE_CLIENT_SECRET")
-          for SECRET in "${REQUIRED_SECRETS[@]}"; do
-            if [[ -z "${!SECRET}" ]]; then
-              echo "ERROR: Secret $SECRET is not set. Deployment failed!"
-              exit 1
-            fi
-          done
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
-          SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
-          TASK_FAMILY_FRONTEND: ${{ secrets.TASK_FAMILY_FRONTEND }}
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
-          VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
-          VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
+          aws-region: us-east-2  # Change if needed
 
       - name: Login to AWS ECR
         id: login-ecr
@@ -52,91 +30,17 @@ jobs:
 
       - name: Build and Push Docker Image
         env:
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY: razorit/web
+          ECR_REGISTRY: 644732129545.dkr.ecr.us-east-2.amazonaws.com
+          ECR_REPOSITORY: razorit/web  # Update this to match your ECR repo name
           IMAGE_TAG: latest
         run: |
-          echo "Building frontend with environment variables..."
-          
-          docker build --build-arg VITE_API_BASE_URL="${{ secrets.VITE_API_BASE_URL }}" \
-                       --build-arg VITE_SITE_NAME="${{ secrets.VITE_SITE_NAME }}" \
-                       --build-arg VITE_CLIENT_ID="${{ secrets.VITE_CLIENT_ID }}" \
-                       --build-arg VITE_CLIENT_SECRET="${{ secrets.VITE_CLIENT_SECRET }}" \
-                       -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.prod .
-
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Register New Task Definition for Frontend
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
-          SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
-          TASK_DEFINITION_NAME: "razorit-web-task"
-          LOG_GROUP_NAME: "/ecs/razorit-web-task"
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY: razorit/web
-          IMAGE_TAG: latest
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
-          VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
-          VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
-        run: |
-          aws ecs describe-task-definition --task-definition $TASK_DEFINITION_NAME --query "taskDefinition" --output json > current-task-def.json
-
-          FRONTEND_CONTAINER=$(jq -r '.containerDefinitions[].name' current-task-def.json | head -n1)
-          echo "Using frontend container: $FRONTEND_CONTAINER"
-
-          jq --arg IMAGE "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
-             --arg FRONTEND_CONTAINER "$FRONTEND_CONTAINER" \
-             --arg VITE_API_BASE_URL "$VITE_API_BASE_URL" \
-             --arg VITE_SITE_NAME "$VITE_SITE_NAME" \
-             --arg VITE_CLIENT_ID "$VITE_CLIENT_ID" \
-             --arg VITE_CLIENT_SECRET "$VITE_CLIENT_SECRET" \
-             --arg LOG_GROUP_NAME "$LOG_GROUP_NAME" \
-             --arg AWS_REGION "$AWS_REGION" \
-             '.containerDefinitions |= map(
-               if .name == $FRONTEND_CONTAINER then
-                 .image = $IMAGE |
-                 .environment = [
-                   {"name": "VITE_API_BASE_URL", "value": $VITE_API_BASE_URL},
-                   {"name": "VITE_SITE_NAME", "value": $VITE_SITE_NAME},
-                   {"name": "VITE_CLIENT_ID", "value": $VITE_CLIENT_ID},
-                   {"name": "VITE_CLIENT_SECRET", "value": $VITE_CLIENT_SECRET}
-                 ] |
-                 .portMappings = [
-                   {"containerPort": 3000, "hostPort": 80, "protocol": "tcp"}
-                 ] |
-                 .logConfiguration = {
-                   "logDriver": "awslogs",
-                   "options": {
-                     "awslogs-group": $LOG_GROUP_NAME,
-                     "awslogs-region": $AWS_REGION,
-                     "awslogs-stream-prefix": "ecs",
-                     "awslogs-create-group": "true",
-                     "mode": "non-blocking",
-                     "max-buffer-size": "25m"
-                   }
-                 }
-               else . end
-             ) | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' current-task-def.json > new-task-def.json
-
-          cat new-task-def.json  # Debugging step
-
-      - name: Enable Execute Command on ECS Service
+      - name: Update ECS Service
         env:
           AWS_REGION: us-east-2
           CLUSTER_NAME: razorit-cluster
           SERVICE_NAME: razorit-web-service
         run: |
-          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --enable-execute-command
-
-      - name: Verify ExecuteCommand is Enabled
-        env:
-          AWS_REGION: us-east-2
-          CLUSTER_NAME: razorit-cluster
-          SERVICE_NAME: razorit-web-service
-          TASK_FAMILY_FRONTEND: ${{ secrets.TASK_FAMILY_FRONTEND }}
-        run: |
-          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --enable-execute-command
-          NEW_TASK_DEF_ARN=$(aws ecs describe-task-definition --task-definition $TASK_FAMILY_FRONTEND --query "taskDefinition.taskDefinitionArn" --output text)
-          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $NEW_TASK_DEF_ARN --force-new-deployment
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
