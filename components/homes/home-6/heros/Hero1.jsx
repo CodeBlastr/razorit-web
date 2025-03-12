@@ -22,15 +22,15 @@ export default function Hero1() {
                 </h2>
                 <h1 className="hs-title-10 mb-30">
                   <span className="wow charsAnimIn" data-splitting="chars">
-                    Make your{" "}
+                    Automate your business with a {" "}
                     <span className="mark-decoration-3-wrap color-secondary-1-white">
-                      beautiful
+                    30 minute call
                       <b
                         className="mark-decoration-3 wow scalexIn"
                         data-wow-delay="1.1s"
                       />
                     </span>{" "}
-                    web presence easily
+                    
                   </span>
                 </h1>
                 <p
