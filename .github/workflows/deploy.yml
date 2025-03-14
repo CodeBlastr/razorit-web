@@ -3,12 +3,13 @@ name: Deploy Frontend to AWS ECS
 on:
   push:
     branches:
-      - main  # Triggers deployment when pushing to main
+      - main  # Deploy when pushing to the main branch
 
 jobs:
   deploy:
-    name: Deploy Frontend
+    name: Deploy to AWS
     runs-on: ubuntu-latest
+    environment: production  # <-- Use the "production" environment to access environment secrets
 
     steps:
       - name: Checkout Repository
@@ -22,7 +23,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2  # Change if needed
+          aws-region: ${{ secrets.production.AWS_REGION }}
 
       - name: Login to AWS ECR
         id: login-ecr
@@ -30,8 +31,8 @@ jobs:
 
       - name: Build and Push Docker Image
         env:
-          ECR_REGISTRY: 644732129545.dkr.ecr.us-east-2.amazonaws.com
-          ECR_REPOSITORY: razorit/web  # Update this to match your ECR repo name
+          ECR_REGISTRY: ${{ secrets.production.ECR_REGISTRY }}
+          ECR_REPOSITORY: ${{ secrets.production.ECR_REPOSITORY }}
           IMAGE_TAG: latest
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -39,8 +40,7 @@ jobs:
 
       - name: Update ECS Service
         env:
-          AWS_REGION: us-east-2
-          CLUSTER_NAME: razorit-cluster
-          SERVICE_NAME: razorit-web-service
+          CLUSTER_NAME: ${{ secrets.production.CLUSTER_NAME }}
+          SERVICE_NAME: ${{ secrets.production.SERVICE_NAME }}
         run: |
           aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
