@@ -1,42 +1,24 @@
-# Use official Node.js image for building
-FROM node:18 AS builder
+# Use official Node.js image
+FROM node:18
 
+# Set the working directory
 WORKDIR /app
-
-# Install Yarn globally
-RUN corepack enable && corepack prepare yarn@stable --activate
-
-# Set Yarn to use node_modules instead of PnP
-ENV YARN_NODE_LINKER=node-modules
 
 # Copy package.json and yarn.lock
 COPY package.json yarn.lock ./
 
-# Install dependencies using Yarn
-RUN yarn install --immutable
+# Install dependencies
+RUN corepack enable && corepack prepare yarn@stable --activate \
+    && yarn install --immutable
 
-# Copy the entire app source
+# Copy the rest of the application
 COPY . .
 
-# Build the frontend
+# Build the Next.js app
 RUN yarn build
 
-# Use a lightweight Node.js image for serving
-FROM node:18 AS runner
-
-WORKDIR /app
-
-# Set environment to production
-ENV NODE_ENV=production
-
-# Copy only the necessary files from the builder stage
-COPY --from=builder /app/package.json /app/yarn.lock ./
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules ./node_modules
-
-# Expose Next.js default port
+# Expose the application port
 EXPOSE 3000
 
-# Start Next.js server
-CMD ["yarn", "next", "start"]
+# Start the Next.js server
+CMD ["yarn", "start"]
