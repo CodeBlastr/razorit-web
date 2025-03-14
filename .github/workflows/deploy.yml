@@ -9,7 +9,7 @@ jobs:
   deploy:
     name: Deploy to AWS
     runs-on: ubuntu-latest
-    environment: production  # <-- Use the "production" environment to access environment secrets
+    environment: production  # Ensure environment secrets are accessible
 
     steps:
       - name: Checkout Repository
@@ -18,12 +18,24 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
+      - name: Debug Secrets and Environment Variables
+        run: |
+          echo "Checking required environment secrets..."
+          echo "AWS_REGION: ${{ secrets.production.AWS_REGION }}"
+          echo "ECR_REGISTRY: ${{ secrets.production.ECR_REGISTRY }}"
+          echo "ECR_REPOSITORY: ${{ secrets.production.ECR_REPOSITORY }}"
+          echo "CLUSTER_NAME: ${{ secrets.production.CLUSTER_NAME }}"
+          echo "SERVICE_NAME: ${{ secrets.production.SERVICE_NAME }}"
+
+      - name: Export AWS_REGION from Environment Secrets
+        run: echo "AWS_REGION=${{ secrets.production.AWS_REGION }}" >> $GITHUB_ENV
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.production.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to AWS ECR
         id: login-ecr
