@@ -239,32 +239,6 @@ export default function ElementPageHeaderIconsBrands() {
                     <div className="icons-example-box">
                       <div className="icons-example-box-icon">
                         {/* Icon Code */}
-                        <i className="fa-facebook" />
-                        {/* End Icon Code */}
-                      </div>
-                      <div className="icons-example-box-class">fa-facebook</div>
-                    </div>
-                  </div>
-                  {/* End Icon Box Item */}
-                  {/* Icon Box Item */}
-                  <div className="col-6 col-sm-4 col-md-3 col-lg-2 mb-30 d-flex align-items-stretch">
-                    <div className="icons-example-box">
-                      <div className="icons-example-box-icon">
-                        {/* Icon Code */}
-                        <i className="fa-facebook-f" />
-                        {/* End Icon Code */}
-                      </div>
-                      <div className="icons-example-box-class">
-                        fa-facebook-f
-                      </div>
-                    </div>
-                  </div>
-                  {/* End Icon Box Item */}
-                  {/* Icon Box Item */}
-                  <div className="col-6 col-sm-4 col-md-3 col-lg-2 mb-30 d-flex align-items-stretch">
-                    <div className="icons-example-box">
-                      <div className="icons-example-box-icon">
-                        {/* Icon Code */}
                         <i className="fa-figma" />
                         {/* End Icon Code */}
                       </div>
