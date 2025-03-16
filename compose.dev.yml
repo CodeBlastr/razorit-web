@@ -13,6 +13,9 @@ services:
       - /app/node_modules  # Avoid overwriting node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - REACT_APP_API_URL=http://localhost:8000  # Update if your backend is running on a different port
+      - RAZORIT_API_URL=${RAZORIT_API_URL}
+      - RAZORIT_API_CLIENT_ID=${RAZORIT_API_CLIENT_ID}
+      - RAZORIT_API_CLIENT_SECRET=${RAZORIT_API_CLIENT_SECRET}
+    env_file:
+      - .env
     command: ["sh", "-c", "yarn install && yarn dev"]
-

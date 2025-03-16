@@ -10,5 +10,5 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - REACT_APP_API_URL=http://api.razorit.com
+      - RAZORIT_API_URL=http://api.razorit.com
     restart: unless-stopped  # Ensures the container restarts if it crashes

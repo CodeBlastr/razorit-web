@@ -22,7 +22,7 @@ export default function Footer7() {
               Get started with Resonance Template
             </h2>
             <p className="text-gray mb-40">
-              Integer auctor aliquet martor, sed lorem malesuada eros blandit
+              Footer7.jsx auctor aliquet martor, sed lorem malesuada eros blandit
               eget. Proin lacinia mortoc id odio vestibulum lorem ipsum.
             </p>
             <div className="local-scroll">

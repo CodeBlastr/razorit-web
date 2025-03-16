@@ -10,7 +10,7 @@ export default function Contact() {
         <div className="col-lg-4 mb-md-50 mb-sm-30 position-relative z-index-1">
           <h2 className="section-caption-fancy mb-20 mb-xs-10">Contact Us</h2>
           <h3 className="section-title mb-50 mb-sm-30">
-            We’re open to talk to good people.
+            We’re open. <br/>Let's talk.
           </h3>
           {/* Contact Information */}
           <div className="row">

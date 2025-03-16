@@ -41,16 +41,16 @@ export default function Footer1({ dark = false }) {
               />
             </Link>
             <p>
-              Integer auctor aliquet martor, sed lorem malesuada eros blandit
+              Footer1.jsx sed lorem malesuada eros blandit
               eget. Proin lacinia mortoc id odio vestibulum.
             </p>
             <div className="clearlinks">
               <strong>T.</strong>
-              <a href="tel:+18376528800">+1 837 652 8800</a>
+              <a href="tel:+18376528800">+1 315 352 0266</a>
             </div>
             <div className="clearlinks">
               <strong>E.</strong>
-              <a href="mailto:ibthemes21@gmail.com">ibthemes21@gmail.com</a>
+              <a href="mailto:sales@razorit.com">sales@razorit.com</a>
             </div>
           </div>
           <div className="col-md-7 offset-md-1 offset-lg-2">

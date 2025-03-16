@@ -19,23 +19,22 @@ export default function Footer6() {
         <div className="col-lg-3 text-gray mb-md-50">
           <div className="mb-30">
             <Image
-              src="/assets/images/demo-fancy/logo-white.png"
-              alt="Your Company Logo"
+              src="/assets/images/razorit-logo-white.svg"
+              alt="RazorIT Custom Automation Company"
               width={154}
               height={35}
             />
           </div>
           <p>
-            Integer auctor aliquet martor, sed lorem malesuada eros blandit
-            eget. Proin lacinia mortoc id odio vestibulum.
+            Cutting edge custom technology automation development firm.
           </p>
           <div className="clearlinks">
             <strong>T.</strong>
-            <a href="tel:+18376528800">+1 837 652 8800</a>
+            <a href="tel:+18376528800">+1 315 352 0266</a>
           </div>
           <div className="clearlinks">
             <strong>E.</strong>
-            <a href="mailto:ibthemes21@gmail.com">ibthemes21@gmail.com</a>
+            <a href="mailto:sales@razorit.com">sales@razorit.com</a>
           </div>
         </div>
         <div className="col-lg-7 offset-lg-2">
@@ -78,10 +77,10 @@ export default function Footer6() {
       {/* Footer Text */}
       <div className="row text-gray">
         <div className="col-md-4 col-lg-3">
-          <b>© IB-Themes {new Date().getFullYear()}.</b>
+          <b>© RazorIT LLC {new Date().getFullYear()}.</b>
         </div>
         <div className="col-md-7 offset-md-1 offset-lg-2 clearfix">
-          <b>Based in London, United Kingdom.</b>
+          <b>Based in Syracuse, NY, United States.</b>
           {/* Back to Top Link */}
           <div
             className="local-scroll float-end mt-n20 mt-sm-10"

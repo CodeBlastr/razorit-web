@@ -23,11 +23,11 @@ export default function Contact({ heading }) {
           </p>
           <div>
             <a
-              href="mailto:ibthemes21@gmail.com"
+              href="mailto:sales@razorit.com"
               className="link-hover-anim align-middle"
               data-link-animate="y"
             >
-              ibthemes21@gmail.com
+              sales@razorit.com
             </a>
           </div>
           <div>
@@ -36,7 +36,7 @@ export default function Contact({ heading }) {
               className="link-hover-anim align-middle"
               data-link-animate="y"
             >
-              +1 837 652 8800
+              +1 315 352 0266
             </a>
           </div>
         </div>

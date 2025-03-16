@@ -2,9 +2,9 @@ export const contactItems = [
   {
     iconClass: "mi-location",
     title: "Address",
-    text: "Envato Pty Ltd, PO Box 16122 Collins Street, West Victoria.",
+    text: "Syracuse, NY",
     link: {
-      url: "https://goo.gl/maps/7Vw1PBhxx5BaXStr8",
+      url: "https://maps.app.goo.gl/Z4KR3uaEpebstKEG6",
       text: "See Map",
       rel: "nofollow noopener",
       target: "_blank",
@@ -13,16 +13,16 @@ export const contactItems = [
   {
     iconClass: "mi-email",
     title: "Email",
-    text: "ibthemes21@gmail.com",
+    text: "sales@razorit.com",
     link: {
-      url: "mailto:ibthemes21@gmail.com",
+      url: "mailto:sales@razorit.com",
       text: "Say Hello",
     },
   },
   {
     iconClass: "mi-mobile",
     title: "Phone",
-    text: "+1 837 652 8800",
+    text: "+1 315 352 0266",
     link: {
       url: "tel:+61383767284",
       text: "Call now",
