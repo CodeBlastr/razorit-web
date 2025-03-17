@@ -64,7 +64,7 @@ export default function Contact() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          subject: "Contact Form Submission",
+          subject: "RazorIT Information Request",
           message: formData.message,
           reply_to: formData.email,
         }),
