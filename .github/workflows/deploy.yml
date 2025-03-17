@@ -30,19 +30,22 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and Push Docker Image
-        env:
-          ECR_REGISTRY: $ECR_REGISTRY
-          ECR_REPOSITORY: $ECR_REPOSITORY
-          IMAGE_TAG: latest
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "ECR_REGISTRY=${{ env.ECR_REGISTRY }}"
+          echo "ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}"
+          
+          docker build -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest .
+          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
+        env:
+          ECR_REGISTRY: ${{ vars.ECR_REGISTRY }}
+          ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
 
       - name: Update ECS Service
-        env:
-          CLUSTER_NAME: $CLUSTER_NAME
-          SERVICE_NAME: $SERVICE_NAME
         run: |
-          echo "Cluster Name: $CLUSTER_NAME"
-          echo "Service Name: $SERVICE_NAME"
-          aws ecs update-service --cluster "$CLUSTER_NAME" --service "$SERVICE_NAME" --force-new-deployment
+          echo "Cluster Name: ${{ env.CLUSTER_NAME }}"
+          echo "Service Name: ${{ env.SERVICE_NAME }}"
+          
+          aws ecs update-service --cluster "${{ env.CLUSTER_NAME }}" --service "${{ env.SERVICE_NAME }}" --force-new-deployment
+        env:
+          CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
+          SERVICE_NAME: ${{ vars.SERVICE_NAME }}
