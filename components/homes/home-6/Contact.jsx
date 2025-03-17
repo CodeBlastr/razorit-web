@@ -1,96 +1,144 @@
 "use client";
+import { useState, useEffect } from "react";
 import { contactItems } from "@/data/contact";
-import React from "react";
 import Image from "next/image";
+
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const [status, setStatus] = useState({ success: null, message: "" });
+
+  const getAuthToken = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_RAZORIT_API_URL}/auth/token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      if (response.ok && result.access_token) {
+        localStorage.setItem("razorit_token", result.access_token);
+        return result.access_token;
+      } else {
+        throw new Error("Failed to retrieve token");
+      }
+    } catch (error) {
+      console.error("Auth error:", error);
+      setStatus({ success: false, message: "Authentication failed. Try again later." });
+      return null;
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus({ success: null, message: "Sending..." });
+
+    try {
+      // Check for token, get one if missing
+      let authToken = localStorage.getItem("razorit_token");
+      if (!authToken) {
+        authToken = await getAuthToken();
+        if (!authToken) {
+          setStatus({ success: false, message: "Could not authenticate. Please try again." });
+          return;
+        }
+      }
+
+      // Send the contact form request
+      const response = await fetch(`${process.env.NEXT_PUBLIC_RAZORIT_API_URL}/send-contact/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: "Contact Form Submission",
+          message: formData.message,
+          reply_to: formData.email,
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        setStatus({ success: true, message: "Message sent successfully!" });
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        if (response.status === 401) {
+          // If unauthorized, try again after getting a new token
+          localStorage.removeItem("razorit_token");
+          authToken = await getAuthToken();
+          if (authToken) {
+            return handleSubmit(e);
+          }
+        }
+        setStatus({ success: false, message: result.detail || "Failed to send message." });
+      }
+    } catch (error) {
+      setStatus({ success: false, message: "Something went wrong. Try again later." });
+    }
+  };
+
   return (
     <div className="container position-relative">
       <div className="row">
-        {/* Left Column */}
         <div className="col-lg-4 mb-md-50 mb-sm-30 position-relative z-index-1">
           <h2 className="section-caption-fancy mb-20 mb-xs-10">Contact Us</h2>
           <h3 className="section-title mb-50 mb-sm-30">
-            We’re open. <br/>Let's talk.
+            We’re open. <br /> Let's talk.
           </h3>
-          {/* Contact Information */}
+
           <div className="row">
             <div className="col-md-11">
-              {/* Address */}
-
               {contactItems.map((item, index) => (
-                <React.Fragment key={index}>
-                  <div
-                    className={`contact-item ${
-                      index !== 3 ? "mb-40 mb-sm-20" : ""
-                    }`}
-                  >
-                    <div className="ci-icon">
-                      <i className={item.iconClass} />
-                    </div>
-                    <h4 className="ci-title  visually-hidden">{item.title}</h4>
-                    <div className="ci-text">{item.text}</div>
-                    <div>
-                      <a
-                        href={item.link.url}
-                        target={item.link.target}
-                        rel={item.link.rel}
-                        className="link-hover-anim"
-                        data-link-animate="y"
-                      >
-                        <span className="link-strong link-strong-unhovered">
-                          {item.link.text}{" "}
-                          <i
-                            className="mi-arrow-right size-18"
-                            aria-hidden="true"
-                          ></i>
-                        </span>
-                        <span
-                          className="link-strong link-strong-hovered"
-                          aria-hidden="true"
-                        >
-                          {item.link.text}{" "}
-                          <i
-                            className="mi-arrow-right size-18"
-                            aria-hidden="true"
-                          ></i>
-                        </span>
-                      </a>
-                    </div>
+                <div key={index} className={`contact-item ${index !== 3 ? "mb-40 mb-sm-20" : ""}`}>
+                  <div className="ci-icon">
+                    <i className={item.iconClass} />
                   </div>
-                </React.Fragment>
+                  <h4 className="ci-title visually-hidden">{item.title}</h4>
+                  <div className="ci-text">{item.text}</div>
+                  <div>
+                    <a href={item.link.url} target={item.link.target} rel={item.link.rel} className="link-hover-anim">
+                      <span className="link-strong link-strong-unhovered">
+                        {item.link.text} <i className="mi-arrow-right size-18" aria-hidden="true"></i>
+                      </span>
+                      <span className="link-strong link-strong-hovered" aria-hidden="true">
+                        {item.link.text} <i className="mi-arrow-right size-18" aria-hidden="true"></i>
+                      </span>
+                    </a>
+                  </div>
+                </div>
               ))}
-              {/* End Phone */}
             </div>
           </div>
-          {/* End Contact Information */}
         </div>
-        {/* End Left Column */}
+
         {/* Right Column */}
         <div className="col-lg-8 col-xl-7 offset-xl-1">
           <div className="position-relative">
-            {/* Decorative Image */}
             <div className="decoration-11 d-none d-xl-block">
               <div className="wow fadeInUp">
-                <Image
-                  src="/assets/images/demo-fancy/contact-section-image.png"
-                  width={225}
-                  height={250}
-                  alt=""
-                />
+                <Image src="/assets/images/demo-fancy/contact-section-image.png" width={225} height={250} alt="" />
               </div>
             </div>
-            {/* End Decorative Image */}
+
             <div className="box-shadow round p-4 p-sm-5">
-              <h4 className="h3 mb-30">Get in Touch</h4>
-              {/* Contact Form */}
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="form contact-form"
-                id="contact_form"
-              >
+              <h4 className="h3 mb-30">Take 30 Seconds, and Get Started</h4>
+
+              <form onSubmit={handleSubmit} className="form contact-form">
                 <div className="row">
                   <div className="col-md-6">
-                    {/* Name */}
                     <div className="form-group">
                       <label htmlFor="name">Name</label>
                       <input
@@ -99,15 +147,13 @@ export default function Contact() {
                         id="name"
                         className="input-lg round form-control"
                         placeholder="Enter your name"
-                        pattern=".{3,100}"
+                        value={formData.name}
+                        onChange={handleChange}
                         required
-                        aria-required="true"
                       />
                     </div>
-                    {/* End Name */}
                   </div>
                   <div className="col-md-6">
-                    {/* Email */}
                     <div className="form-group">
                       <label htmlFor="email">Email</label>
                       <input
@@ -116,63 +162,54 @@ export default function Contact() {
                         id="email"
                         className="input-lg round form-control"
                         placeholder="Enter your email"
-                        pattern=".{5,100}"
+                        value={formData.email}
+                        onChange={handleChange}
                         required
-                        aria-required="true"
                       />
                     </div>
-                    {/* End Email */}
                   </div>
                 </div>
-                {/* Message */}
+
                 <div className="form-group">
-                  <label htmlFor="message">Message</label>
+                  <label htmlFor="message">Message {process.env.NEXT_PUBLIC_RAZORIT_API_URL} - url</label>
                   <textarea
                     name="message"
                     id="message"
                     className="input-lg round form-control"
-                    style={{ height: 130 }}
                     placeholder="Enter your message"
-                    defaultValue={""}
+                    value={formData.message}
+                    onChange={handleChange}
+                    style={{ height: 130 }}
+                    required
                   />
                 </div>
+
                 <div className="row">
                   <div className="col-md-6 col-xl-5">
-                    {/* Send Button */}
                     <div className="pt-3">
-                      <button
-                        className="submit_btn btn btn-mod btn-color btn-large btn-round btn-hover-anim"
-                        id="submit_btn"
-                        aria-controls="result"
-                      >
+                      <button type="submit" className="submit_btn btn btn-mod btn-color btn-large btn-round btn-hover-anim">
                         <span>Send Message</span>
                       </button>
                     </div>
-                    {/* End Send Button */}
                   </div>
                   <div className="col-md-6 col-xl-7 d-flex align-items-center">
-                    {/* Inform Tip */}
                     <div className="form-tip w-100 pt-3 mt-sm-20">
                       <i className="icon-info size-16" />
-                      All the fields are required. By sending the form you agree
-                      to the <a href="#">Terms &amp; Conditions</a> and{" "}
-                      <a href="#">Privacy Policy</a>.
+                      All fields are required. By sending the form you agree to the{" "}
+                      <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>.
                     </div>
-                    {/* End Inform Tip */}
                   </div>
                 </div>
-                <div
-                  id="result"
-                  role="region"
-                  aria-live="polite"
-                  aria-atomic="true"
-                />
+
+                {status.message && (
+                  <div className={`alert ${status.success ? "alert-success" : "alert-danger"} mt-3`} role="alert">
+                    {status.message}
+                  </div>
+                )}
               </form>
-              {/* End Contact Form */}
             </div>
           </div>
         </div>
-        {/* End Right Column */}
       </div>
     </div>
   );

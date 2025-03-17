@@ -1,5 +1,10 @@
 # Local Dev Environment Setup
 
+`cd api`
+`docker compose up -d --build`
+
+
+`cd web`
 `docker compose -f compose.dev.yml up -d --build`
 
 
