@@ -9,7 +9,7 @@ jobs:
   deploy:
     name: Deploy to AWS
     runs-on: ubuntu-latest
-    environment: production  # Ensure environment secrets are accessible
+    environment: production  # Ensure environment variables are accessible
 
     steps:
       - name: Checkout Repository
@@ -31,8 +31,8 @@ jobs:
 
       - name: Build and Push Docker Image
         env:
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          ECR_REGISTRY: $ECR_REGISTRY
+          ECR_REPOSITORY: $ECR_REPOSITORY
           IMAGE_TAG: latest
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -40,7 +40,9 @@ jobs:
 
       - name: Update ECS Service
         env:
-          CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
-          SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+          CLUSTER_NAME: $CLUSTER_NAME
+          SERVICE_NAME: $SERVICE_NAME
         run: |
-          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
+          echo "Cluster Name: $CLUSTER_NAME"
+          echo "Service Name: $SERVICE_NAME"
+          aws ecs update-service --cluster "$CLUSTER_NAME" --service "$SERVICE_NAME" --force-new-deployment
