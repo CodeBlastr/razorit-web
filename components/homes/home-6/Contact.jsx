@@ -171,7 +171,7 @@ export default function Contact() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="message">Message {process.env.NEXT_PUBLIC_RAZORIT_API_URL} ..message</label>
+                  <label htmlFor="message">Message</label>
                   <textarea
                     name="message"
                     id="message"
