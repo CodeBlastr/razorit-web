@@ -8,6 +8,16 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 COPY .yarnrc.yml ./
 
+# Use build arguments to pass environment variables
+ARG NEXT_PUBLIC_RAZORIT_API_URL
+ARG NEXT_PUBLIC_RAZORIT_API_CLIENT_ID
+ARG NEXT_PUBLIC_RAZORIT_API_CLIENT_SECRET
+
+# Set environment variables inside the container
+ENV NEXT_PUBLIC_RAZORIT_API_URL=$NEXT_PUBLIC_RAZORIT_API_URL
+ENV NEXT_PUBLIC_RAZORIT_API_CLIENT_ID=$NEXT_PUBLIC_RAZORIT_API_CLIENT_ID
+ENV NEXT_PUBLIC_RAZORIT_API_CLIENT_SECRET=$NEXT_PUBLIC_RAZORIT_API_CLIENT_SECRET
+
 # Install dependencies
 RUN corepack enable && corepack prepare yarn@stable --activate \
     && yarn config set nodeLinker node-modules \

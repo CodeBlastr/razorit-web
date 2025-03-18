@@ -50,6 +50,9 @@ jobs:
         env:
           ECR_REGISTRY: ${{ vars.ECR_REGISTRY }}
           ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          NEXT_PUBLIC_RAZORIT_API_URL: ${{ vars.NEXT_PUBLIC_RAZORIT_API_URL }}
+          NEXT_PUBLIC_RAZORIT_API_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_RAZORIT_API_CLIENT_ID }}
+          NEXT_PUBLIC_RAZORIT_API_CLIENT_SECRET: ${{ secrets.NEXT_PUBLIC_RAZORIT_API_CLIENT_SECRET }}
 
       - name: Register New Task Definition
         run: |
