@@ -18,13 +18,13 @@ export default function Hero1() {
                   className="section-caption-fancy mb-30 mb-xs-20 wow fadeInUp"
                   data-wow-duration="1.2s"
                 >
-                  Custom Application Studio
+                  Custom Application Development
                 </h2>
                 <h1 className="hs-title-10 mb-30">
                   <span className="wow charsAnimIn" data-splitting="chars">
                     Automate your business starting with a {" "}
                     <span className="mark-decoration-3-wrap color-secondary-1-white">
-                    15 minute call
+                    15 minute call.
                       <b
                         className="mark-decoration-3 wow scalexIn"
                         data-wow-delay="1.1s"
@@ -39,9 +39,8 @@ export default function Hero1() {
                   data-wow-duration="1.2s"
                   data-wow-offset={0}
                 >
-                  We are an award winning studio specializing in branding,
-                  design and engineering. Our mission is to make work process
-                  meaningful.
+                  Our mission is to make your work processes efficient 
+                  meaningful, and as easy as possible. 
                 </p>
                 <div
                   className="local-scroll wow fadeInUp wch-unset"
@@ -54,28 +53,6 @@ export default function Hero1() {
                   >
                     <span>Discover now</span>
                   </a>{" "}
-                  <a
-                    onClick={() => setOpen(true)}
-                    className="btn btn-mod btn-border-c btn-white-c btn-large btn-round mb-xs-10 lightbox mfp-iframe"
-                    data-btn-animate="y"
-                  >
-                    <span className="btn-animate-y">
-                      <span className="btn-animate-y-1">
-                        <i
-                          className="icon-play size-13 me-1"
-                          aria-hidden="true"
-                        ></i>{" "}
-                        How we work?
-                      </span>
-                      <span className="btn-animate-y-2" aria-hidden="true">
-                        <i
-                          className="icon-play size-13 me-1"
-                          aria-hidden="true"
-                        ></i>{" "}
-                        How we work?
-                      </span>
-                    </span>
-                  </a>
                 </div>
               </div>
             </div>
@@ -106,26 +83,6 @@ export default function Hero1() {
                     />
                   </div>
                   {/* End Decorative Waves */}
-                </div>
-                <div className="small text-gray text-center">
-                  Illustration by
-                  <a
-                    href="https://icons8.com/illustrations/author/TQQ1qAnr9rn5"
-                    rel="noopener nofollow"
-                    target="_blank"
-                  >
-                    {" "}
-                    Oleg Shcherba
-                  </a>{" "}
-                  from{" "}
-                  <a
-                    href="https://icons8.com/illustrations"
-                    rel="noopener nofollow"
-                    target="_blank"
-                  >
-                    Ouch
-                  </a>
-                  !
                 </div>
               </div>
             </div>

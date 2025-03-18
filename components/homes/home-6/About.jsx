@@ -8,17 +8,9 @@ export default function About() {
           <div className="composition-1">
             <div className="composition-1-image-1">
               <Image
-                src="/assets/images/demo-fancy/section-image-1.jpg"
-                width={480}
+                src="/assets/images/plan-to-find.png"
+                width={800}
                 height={358}
-                alt="Image Description"
-              />
-            </div>
-            <div className="composition-1-image-2">
-              <Image
-                src="/assets/images/demo-fancy/section-image-2.jpg"
-                width={440}
-                height={330}
                 alt="Image Description"
               />
             </div>
@@ -56,24 +48,16 @@ export default function About() {
           <div className="composition-2">
             <div className="composition-2-image-1 mt-xs-0">
               <Image
-                src="/assets/images/demo-fancy/section-image-3.jpg"
-                width={372}
-                height={500}
+                src="/assets/images/plan-to-close.png"
+                width={380}
+                height={380}
                 alt="Image Description"
-              />
-            </div>
-            <div className="composition-2-image-2">
-              <Image
-                src="/assets/images/demo-fancy/section-image-4.jpg"
-                alt="Image Description"
-                width={440}
-                height={330}
               />
             </div>
             <div
               className="composition-2-decoration"
               data-rellax-y=""
-              data-rellax-speed="0.5"
+              data-rellax-speed="0.9"
               data-rellax-percentage="0.2"
             >
               <Image
@@ -91,17 +75,9 @@ export default function About() {
           <div className="composition-3">
             <div className="composition-3-image-1">
               <Image
-                src="/assets/images/demo-fancy/section-image-6.jpg"
-                width={500}
-                height={372}
-                alt="Image Description"
-              />
-            </div>
-            <div className="composition-3-image-2">
-              <Image
-                src="/assets/images/demo-fancy/section-image-5.jpg"
-                width={440}
-                height={330}
+                src="/assets/images/plan-to-keep.png"
+                width={380}
+                height={380}
                 alt="Image Description"
               />
             </div>

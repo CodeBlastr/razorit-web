@@ -26,18 +26,19 @@ export default function Home6({ onePage = false, dark = false }) {
             <div className="col-md-10 offset-md-1 col-lg-8 offset-lg-2 text-center">
               <h2 className="section-caption-fancy mb-20 mb-xs-10">About Us</h2>
               <h3 className="section-title mb-30 mb-xs-20 wow fadeInUp">
-                The best way to create stanning layouts for your website.
+                We have a plan for you. 
               </h3>
               <p
                 className="section-descr mb-40 mb-sm-20 wow fadeInUp"
                 data-wow-delay="0.06s"
               >
-                Although web design has a fairly recent history. It has become a
-                large part of people's everyday lives. It is hard to imagine the
-                Internet without animated graphics, different styles of
-                typography, background, videos and music.
+                Our leadership &amp; experience in running successful companies
+                gives us insight into tried and true methods for maximizing return 
+                on investment through efficiency. Like your favorite 
+                sport, it comes down to fundamentals &amp; execution. 
               </p>
-              <div className="local-scroll wow fadeInUp" data-wow-delay="0.12s">
+              <h4>Business Fundamentals:  <span class="mark-decoration-3-wrap">Find, Close &amp; Keep</span> Customers</h4>
+              <div className="local-scroll wow fadeInUp" data-wow-delay="0.9s">
                 {onePage ? (
                   <>
                     <a
@@ -115,7 +116,7 @@ export default function Home6({ onePage = false, dark = false }) {
                 Our Services
               </h2>
               <h3 className="section-title mb-0 mb-sm-20">
-                We provide the full stack of&nbsp;the best digital solutions.
+                We provide the full stack of cutting edge solutions.
               </h3>
             </div>
             <div className="col-md-4 col-lg-6 d-flex align-items-end">

@@ -105,23 +105,23 @@ export const serviceItems = [
 
 export const services3 = [
   {
-    src: "/assets/images/demo-fancy/services/service-1.png",
-    title: "Branding",
-    text: "A type of marketing agency, group or a firm which specializes in creating brands, people and their careers marketed as brands.",
+    src: "/assets/images/services-branding.png",
+    title: "First Impressions",
+    text: "We all know you get one shot to make a first impression. Do you have science backed methods for creating that first impression to make a lasting impression? We do.",
   },
   {
-    src: "/assets/images/demo-fancy/services/service-2.png",
-    title: "Web Design",
+    src: "/assets/images/services-conversion.png",
+    title: "Lead Conversion",
     text: "A static website stores a unique file for every page of a static website. Each time that page is requested, the same content is returned.",
   },
   {
     src: "/assets/images/demo-fancy/services/service-3.png",
-    title: "Development",
+    title: "Customer Retention",
     text: "There are three kinds of web developer specialization: front-end developer, back-end developer, and full-stack developer.",
   },
   {
     src: "/assets/images/demo-fancy/services/service-4.png",
-    title: "Marketing",
+    title: "Process Automation",
     text: "Marketing refers to activities a company undertakes to promote the buying or selling of a product, service, or good.",
   },
 ];
