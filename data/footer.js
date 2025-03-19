@@ -1,7 +1,6 @@
 export const footerLinks = [
-  { name: "Privacy Policy", path: "#" },
-  { name: "Terms & Conditions", path: "#" },
-  { name: "Presskit", path: "#" },
+  { name: "Privacy Policy", path: "/privacy" },
+  { name: "Terms & Conditions", path: "/terms" },
 ];
 
 export const footerLinks2 = [
@@ -51,7 +50,6 @@ export const socialMediaLinks = [
 export const navigationLinks = [
   { href: "#about", text: "About" },
   { href: "#services", text: "Services" },
-  { href: "#portfolio", text: "Portfolio" },
-  { href: "#blog", text: "Blog" },
+  { href: "#results", text: "Results" },
   { href: "#contact", text: "Contact" },
 ];
