@@ -65,7 +65,7 @@ export default function Footer6() {
               <ul className="fw-menu clearlist">
                 {footerLinks.map((elm, i) => (
                   <li key={i}>
-                    <a href={elm.path}>{elm.name}</a>
+                    <a href={elm.path} target="_blank">{elm.name}</a>
                   </li>
                 ))}
               </ul>

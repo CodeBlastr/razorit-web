@@ -33,7 +33,7 @@ export default function Footer1({ dark = false }) {
               />
 
               <Image
-                src="/assets/images/logo-white.svg"
+                src="/assets/images/razorit-logo-white.svg"
                 width={105}
                 height={34}
                 className="dark-mode-logo"

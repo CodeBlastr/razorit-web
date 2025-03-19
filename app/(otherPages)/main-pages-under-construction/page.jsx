@@ -22,7 +22,7 @@ export default function MainAboutPage1() {
                 <div className="nav-logo-wrap local-scroll">
                   <Link href={`/`} className="logo">
                     <Image
-                      src="/assets/images/logo-white.svg"
+                      src="/assets/images/razorit-logo-white.svg"
                       alt="Your Company Logo"
                       width={105}
                       height={34}
