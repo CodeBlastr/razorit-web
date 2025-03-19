@@ -26,15 +26,9 @@ export const numberItems = [
 ];
 export const numberItems2 = [
   {
-    id: 1,
-    title: "95",
-    description: "Projects done successfully",
-    extraClass: "mb-sm-10",
-  },
-  {
     id: 2,
-    title: "58",
-    description: "Satisfied customers",
+    title: "$20.4 Million",
+    description: "Realized Return on Investment on 9 Successful Projects in 7 years.",
     extraClass: "",
   },
 ];

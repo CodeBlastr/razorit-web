@@ -121,7 +121,6 @@ export default function Home6({ onePage = false, dark = false }) {
             </div>
             <div className="col-md-4 col-lg-6 d-flex align-items-end">
               <div className="local-scroll text-md-end w-100">
-                {onePage ? (
                   <>
                     {" "}
                     <a
@@ -130,7 +129,7 @@ export default function Home6({ onePage = false, dark = false }) {
                       data-link-animate="y"
                     >
                       <span className="link-strong link-strong-unhovered">
-                        View works{" "}
+                        View results{" "}
                         <i
                           className="mi-arrow-right size-24"
                           aria-hidden="true"
@@ -140,7 +139,7 @@ export default function Home6({ onePage = false, dark = false }) {
                         className="link-strong link-strong-hovered"
                         aria-hidden="true"
                       >
-                        View works{" "}
+                        View results{" "}
                         <i
                           className="mi-arrow-right size-24"
                           aria-hidden="true"
@@ -148,34 +147,6 @@ export default function Home6({ onePage = false, dark = false }) {
                       </span>
                     </a>
                   </>
-                ) : (
-                  <>
-                    {" "}
-                    <Link
-                      href={`/fancy-services${dark ? "-dark" : ""}`}
-                      className="link-hover-anim"
-                      data-link-animate="y"
-                    >
-                      <span className="link-strong link-strong-unhovered">
-                        ALl services{" "}
-                        <i
-                          className="mi-arrow-right size-24"
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-                      <span
-                        className="link-strong link-strong-hovered"
-                        aria-hidden="true"
-                      >
-                        ALl services{" "}
-                        <i
-                          className="mi-arrow-right size-24"
-                          aria-hidden="true"
-                        ></i>
-                      </span>
-                    </Link>
-                  </>
-                )}
               </div>
             </div>
           </div>
@@ -184,37 +155,8 @@ export default function Home6({ onePage = false, dark = false }) {
           <Service />
         </div>
       </section>
-      <section
-        className={`page-section  ${dark ? "bg-dark-1 light-content" : ""} `}
-      >
-        <Features />
-      </section>
-      <section
-        className={`page-section  scrollSpysection  ${
-          dark ? "bg-dark-1 light-content" : ""
-        } `}
-        id="portfolio"
-      >
-        <div className="container position-relative">
-          <div className="row mb-60 mb-sm-40">
-            <div className="col-md-8 offset-md-2 text-center">
-              <h2 className="section-caption-fancy mb-20 mb-xs-10">
-                Selected Work
-              </h2>
-              <h3 className="section-title mb-0">
-                We believe in making the best work, and being the best to work
-                with.
-              </h3>
-            </div>
-          </div>
-
-          <Portfolio />
-        </div>
-      </section>
       <hr className={`mt-0 mb-0 ${dark ? "white" : ""}`} />
-      <section
-        className={`page-section  ${dark ? "bg-dark-1 light-content" : ""} `}
-      >
+      <section id="results" className={`page-section  ${dark ? "bg-dark-1 light-content" : ""} `}>
         {dark ? <TestimonialsDark /> : <Testimonials />}
       </section>
       <hr className={`mt-0 mb-0 ${dark ? "white" : ""}`} />

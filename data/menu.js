@@ -18,7 +18,7 @@ export const strongSinglePages = [
   { href: "#home", text: "Home", className: "active" },
   { href: "#about", text: "About" },
   { href: "#services", text: "Services" },
-  { href: "#portfolio", text: "Portfolio" },
+  { href: "#portfolio", text: "strongSinglePagesPortfolio" },
   { href: "#blog", text: "Blog" },
   { href: "#contact", text: "Contact" },
 ];
@@ -122,7 +122,7 @@ export const fancyOnepage = [
   { href: "#home", text: "Home", className: "active" },
   { href: "#about", text: "About" },
   { href: "#services", text: "Services" },
-  { href: "#portfolio", text: "Portfolio" },
+  { href: "#results", text: "Results" },
   { href: "#blog", text: "Blog" },
   { href: "#pricing", text: "Pricing" },
   { href: "#contact", text: "Contact" },

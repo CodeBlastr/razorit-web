@@ -1,12 +1,12 @@
 export const brands = [
-  "/assets/images/demo-fancy/logotypes/client-1.png",
-  "/assets/images/demo-fancy/logotypes/client-2.png",
-  "/assets/images/demo-fancy/logotypes/client-3.png",
-  "/assets/images/demo-fancy/logotypes/client-4.png",
-  "/assets/images/demo-fancy/logotypes/client-5.png",
-  "/assets/images/demo-fancy/logotypes/client-6.png",
-  "/assets/images/demo-fancy/logotypes/client-1.png",
-  "/assets/images/demo-fancy/logotypes/client-2.png",
+  "/assets/images/clients/fincen-fetch.png",
+  "/assets/images/clients/datadyne.png",
+  "/assets/images/clients/informeddna.png",
+  "/assets/images/clients/healthcare-integrations.png",
+  "/assets/images/clients/a2z-amazon.png",
+  "/assets/images/clients/think-agency.png",
+  "/assets/images/clients/mosaic-learning.png",
+  "/assets/images/clients/sesami.png",
 ];
 export const brandsDark = [
   "/assets/images/demo-fancy/logotypes/dark/client-1.png",

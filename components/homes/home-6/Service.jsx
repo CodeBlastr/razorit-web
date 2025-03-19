@@ -1,4 +1,4 @@
-import { services3 } from "@/data/services";
+import { services } from "@/data/services";
 import React from "react";
 import Image from "next/image";
 const ServiceItem = ({ src, title, text }) => (
@@ -23,31 +23,12 @@ export default function Service() {
     <>
       <div className="row services-5-grid">
         {/* Services Item */}
-        {services3.map((service, index) => (
+        {services.map((service, index) => (
           <ServiceItem key={index} {...service} />
         ))}
         {/* End Services Item */}
       </div>
       {/* End Services Grid */}
-      <div className="small text-gray text-center mt-60 mt-sm-40">
-        Illustrations by{" "}
-        <a
-          href="https://www.instagram.com/b0g3nta"
-          rel="noopener nofollow"
-          target="_blank"
-        >
-          bogenta
-        </a>{" "}
-        from{" "}
-        <a
-          href="https://icons8.com/illustrations"
-          rel="noopener nofollow"
-          target="_blank"
-        >
-          Ouch
-        </a>
-        !
-      </div>{" "}
     </>
   );
 }

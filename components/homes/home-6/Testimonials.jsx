@@ -38,27 +38,26 @@ export default function Testimonials() {
         <div className="col-lg-5 col-xl-5 d-flex align-items-center mb-md-60 mb-sm-40">
           <div className="w-100">
             <h2 className="section-caption-fancy mb-20 mb-xs-10">
-              Testimonials
+              Results
             </h2>
             <h3 className="section-title-small mb-30">
-              We help brands to stand out in the ever-changing digital
-              landscape.
+              Your Growth. Your Gains. Measurable Success.
             </h3>
             <p className="section-descr mb-30">
-              A static website stores a unique file for every page of a static
-              website. Each time that page is requested, the same content is
-              returned.
+              You get what you measure — so let's measure what matters. Just like 
+              with these satisfied clients, success starts with data-driven analysis 
+              and clear, attainable goals. 
             </p>
             {/* Numbers */}
             <div className="row">
               {numberItems2.map((item, index) => (
                 <div
                   key={index}
-                  className={`col-md-6 number-1-item ${
+                  className={`col-md-9 number-1-item ${
                     !index ? "mb-sm-10" : ""
                   }`}
                 >
-                  <div className="number-1-title">{item.title}</div>
+                  <div className="number-1-title clear">{item.title}</div>
                   <div className="number-1-descr">{item.description}</div>
                 </div>
               ))}
