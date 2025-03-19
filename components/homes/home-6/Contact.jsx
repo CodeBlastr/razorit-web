@@ -127,11 +127,6 @@ export default function Contact() {
         {/* Right Column */}
         <div className="col-lg-8 col-xl-7 offset-xl-1">
           <div className="position-relative">
-            <div className="decoration-11 d-none d-xl-block">
-              <div className="wow fadeInUp">
-                <Image src="/assets/images/demo-fancy/contact-section-image.png" width={225} height={250} alt="" />
-              </div>
-            </div>
 
             <div className="box-shadow round p-4 p-sm-5">
               <h4 className="h3 mb-30">Take 30 Seconds, and Get Started</h4>
@@ -196,7 +191,7 @@ export default function Contact() {
                     <div className="form-tip w-100 pt-3 mt-sm-20">
                       <i className="icon-info size-16" />
                       All fields are required. By sending the form you agree to the{" "}
-                      <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>.
+                      <a href="/terms">Terms & Conditions</a> and <a href="/privacy">Privacy Policy</a>.
                     </div>
                   </div>
                 </div>

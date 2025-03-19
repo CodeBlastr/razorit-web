@@ -123,8 +123,6 @@ export const fancyOnepage = [
   { href: "#about", text: "About" },
   { href: "#services", text: "Services" },
   { href: "#results", text: "Results" },
-  { href: "#blog", text: "Blog" },
-  { href: "#pricing", text: "Pricing" },
   { href: "#contact", text: "Contact" },
 ];
 

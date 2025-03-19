@@ -150,7 +150,7 @@ export const testimonials5 = [
     extraClass: "",
   },
   {
-    text: "An unparalleled quick understanding of our business vision and goals, quickly turned into actionable steps to meet them.",
+    text: "An unparalleled quick understanding of our business vision and goals, quickly turned into actionable steps and met them.",
     author: "Charles Wismer",
     position: "CEO @ Diode Capital",
     imgSrc: "/assets/images/clients/charles-wismer.png",

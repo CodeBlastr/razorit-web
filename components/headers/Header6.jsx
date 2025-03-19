@@ -3,7 +3,6 @@ import { toggleMobileMenu } from "@/utlis/toggleMobileMenu";
 import Nav from "./components/Nav";
 
 import Image from "next/image";
-import LanguageSelect from "./components/LanguageSelect";
 import Link from "next/link";
 export default function Header6({ links }) {
   return (
@@ -46,9 +45,6 @@ export default function Header6({ links }) {
           <li className="desktop-nav-display">
             <div className="vr mt-2" />
           </li>
-          {/* Languages */}
-          <LanguageSelect />
-          {/* End Languages */}
           <li>
             {links[0].href.includes("/") ? (
               <Link
