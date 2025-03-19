@@ -168,26 +168,6 @@ export default function Home6({ onePage = false, dark = false }) {
       >
         <Blog />
       </section>
-
-      <hr className={`mt-0 mb-0 ${dark ? "white" : ""}`} />
-
-      <section
-        className={`page-section ${
-          dark
-            ? "bg-dark-1 bg-gradient-gray-dark-1 light-content"
-            : "bg-gradient-gray-light-1 "
-        } bg-scroll`}
-      >
-        <Newsletter />
-      </section>
-      <section
-        className={`page-section  scrollSpysection  ${
-          dark ? "bg-dark-1 light-content" : ""
-        } `}
-        id="pricing"
-      >
-        <Pricing />
-      </section>
       <hr className={`mt-0 mb-0 ${dark ? "white" : ""}`} />
       <section
         className={`page-section  scrollSpysection  ${

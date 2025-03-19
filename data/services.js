@@ -34,17 +34,17 @@ export const services = [
   {
     src: "/assets/images/services-conversion.png",
     title: "Lead Conversion",
-    text: "A static website stores a unique file for every page of a static website. Each time that page is requested, the same content is returned.",
+    text: "Attracting visitors is just the start—converting them into loyal customers is the real game. With optimized funnels, we turn clicks into leads that move seamlessly toward purchase.",
   },
   {
     src: "/assets/images/services-retention.png",
     title: "Customer Retention",
-    text: "There are three kinds of web developer specialization: front-end developer, back-end developer, and full-stack developer.",
+    text: "We help you build retention strategies that foster loyalty, increase engagement, and create repeat business—because satisfied customers don’t just stay, they spread the word.",
   },
   {
     src: "/assets/images/services-automation.png",
     title: "Process Automation",
-    text: "Marketing refers to activities a company undertakes to promote the buying or selling of a product, service, or good.",
+    text: "Efficiency is the secret to scaling. By automating repetitive tasks and optimizing workflows with AI technology we help businesses run smoother and faster, so you can focus on growth.",
   },
 ];
 
