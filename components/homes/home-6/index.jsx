@@ -124,7 +124,7 @@ export default function Home6({ onePage = false, dark = false }) {
                   <>
                     {" "}
                     <a
-                      href="#portfolio"
+                      href="#results"
                       className="link-hover-anim"
                       data-link-animate="y"
                     >
