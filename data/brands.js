@@ -1,7 +1,6 @@
 export const brands = [
   "/assets/images/clients/fincen-fetch.png",
   "/assets/images/clients/datadyne.png",
-  "/assets/images/clients/medgeo.png",
   "/assets/images/clients/informeddna.png",
   "/assets/images/clients/healthcare-integrations.png",
   "/assets/images/clients/a2z-amazon.png",
